@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(test:*)",
+      "Bash(node --version:*)",
+      "Bash(npm --version:*)",
+      "Bash(cat:*)",
+      "Bash(node:*)",
+      "Bash(netstat:*)",
+      "Bash(curl:*)",
+      "Bash(xargs cat:*)",
+      "Bash(grep:*)",
+      "Bash(tree:*)",
+      "Bash(find:*)",
+      "Bash(npm run dev:*)",
+      "Bash(taskkill:*)",
+      "mcp__supabase__execute_sql",
+      "WebSearch"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}
