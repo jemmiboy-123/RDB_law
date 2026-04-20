@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>{{ title or "Law Office OS" }}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  {% if current_user.is_authenticated %}
+  <aside class="sidebar">
+    <div class="brand">RDB<span>Law</span></div>
+    <div class="user-block">
+      <div>{{ current_user.full_name }}</div>
+      <small>{{ current_user.role|upper }}</small>
+    </div>
+    <nav>
+      <a href="{{ url_for('dashboard') }}">Dashboard</a>
+      {% if current_user.role in ['admin', 'lawyer', 'staff'] %}
+      <a href="{{ url_for('clients_list') }}">Clients</a>
+      {% endif %}
+      <a href="{{ url_for('cases_list') }}">Cases</a>
+      <a href="{{ url_for('documents_list') }}">Documents</a>
+      <a href="{{ url_for('calendar_view') }}">Calendar</a>
+      <a href="{{ url_for('tasks_view') }}">Tasks</a>
+      <a href="{{ url_for('billing_index') }}">Billing</a>
+      <a href="{{ url_for('notifications_center') }}">Notifications</a>
+      {% if current_user.role == 'admin' %}
+      <a href="{{ url_for('users_admin') }}">User Admin</a>
+      {% endif %}
+      <a href="{{ url_for('logout') }}">Logout</a>
+    </nav>
+  </aside>
+  {% endif %}
+
+  <main class="main {% if not current_user.is_authenticated %}main-auth{% endif %}">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+      <div class="flash-wrap">
+        {% for category, msg in messages %}
+        <div class="flash {{ category }}">{{ msg }}</div>
+        {% endfor %}
+      </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar"><h1>{{ 'Edit Case' if case else 'New Case' }}</h1></div>
+<form method="post" class="card form-grid">
+  <div class="grid-2">
+    <label>Case Title<input name="title" required value="{{ case.title if case else '' }}"></label>
+    <label>Reference Number<input name="reference_number" required value="{{ case.reference_number if case else '' }}"></label>
+  </div>
+  <div class="grid-2">
+    <label>Case Type<input name="case_type" value="{{ case.case_type if case else '' }}"></label>
+    <label>Client
+      <select name="client_id" required>{% for client in clients %}<option value="{{ client.id }}" {% if case and case.client_id == client.id %}selected{% endif %}>{{ client.full_name }}</option>{% endfor %}</select>
+    </label>
+  </div>
+  <div class="grid-2">
+    <label>Status
+      <select name="status"><option value="open" {% if case and case.status=='open' %}selected{% endif %}>Open</option><option value="pending" {% if case and case.status=='pending' %}selected{% endif %}>Pending</option><option value="closed" {% if case and case.status=='closed' %}selected{% endif %}>Closed</option></select>
+    </label>
+    <label>Opened On<input type="date" name="opened_on" value="{{ case.opened_on if case else '' }}"></label>
+  </div>
+  {% if case %}<label>Closed On<input type="date" name="closed_on" value="{{ case.closed_on or '' }}"></label>{% endif %}
+  <label>Assign Lawyers
+    <select name="lawyers" multiple size="5">
+      {% for l in lawyers %}<option value="{{ l.id }}" {% if case and l in case.lawyers %}selected{% endif %}>{{ l.full_name }}</option>{% endfor %}
+    </select>
+  </label>
+  <label>Description<textarea name="description">{{ case.description if case else '' }}</textarea></label>
+  <div class="actions"><button type="submit">Save Case</button><a class="btn btn-ghost" href="{{ url_for('cases_list') }}">Cancel</a></div>
+</form>
+{% endblock %}

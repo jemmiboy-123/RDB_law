@@ -1,0 +1,27 @@
+<%- include('../partials/header', {title: client ? 'Edit Client' : 'New Client'}) %>
+<div class="topbar"><h1><%= client ? 'Edit Client' : 'New Client' %></h1></div>
+<form method="post" class="card form-grid">
+  <div class="grid-2">
+    <label>Full Name<input name="full_name" required value="<%= client ? client.full_name : '' %>"></label>
+    <label>Email<input name="email" type="email" value="<%= client ? (client.email||'') : '' %>"></label>
+  </div>
+  <div class="grid-2">
+    <label>Phone<input name="phone" value="<%= client ? (client.phone||'') : '' %>"></label>
+    <label>Company<input name="company" value="<%= client ? (client.company||'') : '' %>"></label>
+  </div>
+  <label>Address<input name="address" value="<%= client ? (client.address||'') : '' %>"></label>
+  <label>Portal User (Optional)
+    <select name="portal_user_id">
+      <option value="">None</option>
+      <% client_users.forEach(u => { %>
+      <option value="<%= u.id %>" <%= (client && client.portal_user_id == u.id) ? 'selected' : '' %>><%= u.full_name %> (<%= u.email %>)</option>
+      <% }) %>
+    </select>
+  </label>
+  <label>Notes<textarea name="notes"><%= client ? (client.notes||'') : '' %></textarea></label>
+  <div class="actions">
+    <button type="submit">Save Client</button>
+    <a class="btn btn-ghost" href="/clients">Cancel</a>
+  </div>
+</form>
+<%- include('../partials/footer') %>

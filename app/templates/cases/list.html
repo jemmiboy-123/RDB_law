@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar">
+  <h1>Cases</h1>
+  {% if current_user.role in ['admin','lawyer','staff'] %}<a class="btn" href="{{ url_for('cases_new') }}">New Case</a>{% endif %}
+</div>
+<form method="get" class="card inline" style="margin-bottom:12px;">
+  <input name="q" placeholder="Search case title" value="{{ search }}">
+  <select name="status">
+    <option value="">All Statuses</option>
+    <option value="open" {% if status=='open' %}selected{% endif %}>Open</option>
+    <option value="pending" {% if status=='pending' %}selected{% endif %}>Pending</option>
+    <option value="closed" {% if status=='closed' %}selected{% endif %}>Closed</option>
+  </select>
+  <button type="submit">Apply</button>
+</form>
+<section class="card table-wrap">
+  <table><thead><tr><th>Reference</th><th>Title</th><th>Client</th><th>Status</th><th>Lawyers</th></tr></thead><tbody>
+  {% for c in cases %}
+  <tr><td><a href="{{ url_for('cases_view', case_id=c.id) }}">{{ c.reference_number }}</a></td><td>{{ c.title }}</td><td>{{ c.client.full_name }}</td><td><span class="badge {{ c.status }}">{{ c.status }}</span></td><td>{{ c.lawyers|map(attribute='full_name')|join(', ') or '-' }}</td></tr>
+  {% else %}<tr><td colspan="5">No cases found.</td></tr>{% endfor %}
+  </tbody></table>
+</section>
+{% endblock %}

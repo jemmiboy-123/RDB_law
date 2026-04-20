@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar">
+  <h1>Clients</h1>
+  <div class="actions"><a class="btn" href="{{ url_for('clients_new') }}">New Client</a></div>
+</div>
+<form class="card inline" method="get" style="margin-bottom:12px;">
+  <input name="q" placeholder="Search client" value="{{ query }}" />
+  <button type="submit">Filter</button>
+</form>
+<section class="card table-wrap">
+<table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Cases</th><th></th></tr></thead><tbody>
+  {% for client in clients %}
+  <tr>
+    <td><a href="{{ url_for('clients_view', client_id=client.id) }}">{{ client.full_name }}</a></td>
+    <td>{{ client.email }}</td><td>{{ client.phone }}</td><td>{{ client.cases.count() }}</td>
+    <td><a class="btn btn-ghost" href="{{ url_for('clients_edit', client_id=client.id) }}">Edit</a></td>
+  </tr>
+  {% else %}<tr><td colspan="5">No clients yet.</td></tr>{% endfor %}
+</tbody></table>
+</section>
+{% endblock %}

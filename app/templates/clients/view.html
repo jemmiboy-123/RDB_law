@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar">
+  <h1>{{ client.full_name }}</h1>
+  {% if current_user.role in ['admin','lawyer','staff'] %}<a class="btn" href="{{ url_for('clients_edit', client_id=client.id) }}">Edit</a>{% endif %}
+</div>
+<div class="grid-2">
+  <section class="card stack">
+    <h3>Contact</h3>
+    <p>Email: {{ client.email or '-' }}</p>
+    <p>Phone: {{ client.phone or '-' }}</p>
+    <p>Address: {{ client.address or '-' }}</p>
+    <p>Company: {{ client.company or '-' }}</p>
+  </section>
+  <section class="card stack">
+    <h3>Case History</h3>
+    <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Status</th><th>Opened</th></tr></thead><tbody>
+    {% for c in client_cases %}
+      <tr><td><a href="{{ url_for('cases_view', case_id=c.id) }}">{{ c.reference_number }}</a></td><td><span class="badge {{ c.status }}">{{ c.status }}</span></td><td>{{ c.opened_on }}</td></tr>
+    {% else %}<tr><td colspan="3">No cases found.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+</div>
+<section class="card" style="margin-top:12px;"><h3>Notes</h3><p>{{ client.notes or 'No notes' }}</p></section>
+{% endblock %}

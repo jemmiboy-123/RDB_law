@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar"><h1>{{ 'Edit Client' if client else 'New Client' }}</h1></div>
+<form method="post" class="card form-grid">
+  <div class="grid-2">
+    <label>Full Name<input name="full_name" required value="{{ client.full_name if client else '' }}"></label>
+    <label>Email<input name="email" type="email" value="{{ client.email if client else '' }}"></label>
+  </div>
+  <div class="grid-2">
+    <label>Phone<input name="phone" value="{{ client.phone if client else '' }}"></label>
+    <label>Company<input name="company" value="{{ client.company if client else '' }}"></label>
+  </div>
+  <label>Address<input name="address" value="{{ client.address if client else '' }}"></label>
+  <label>Portal User (Optional)
+    <select name="portal_user_id">
+      <option value="">None</option>
+      {% for u in client_users %}
+      <option value="{{ u.id }}" {% if client and client.portal_user_id == u.id %}selected{% endif %}>{{ u.full_name }} ({{ u.email }})</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label>Notes<textarea name="notes">{{ client.notes if client else '' }}</textarea></label>
+  <div class="actions"><button type="submit">Save Client</button><a class="btn btn-ghost" href="{{ url_for('clients_list') }}">Cancel</a></div>
+</form>
+{% endblock %}

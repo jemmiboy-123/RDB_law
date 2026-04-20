@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar"><h1>Dashboard</h1></div>
+<section class="grid-4">
+  <article class="kpi"><div class="value">{{ stats.active_cases }}</div><div class="label">Active Cases</div></article>
+  <article class="kpi"><div class="value">{{ stats.upcoming_deadlines }}</div><div class="label">Upcoming Deadlines</div></article>
+  <article class="kpi"><div class="value">{{ stats.open_tasks }}</div><div class="label">Open Tasks</div></article>
+  <article class="kpi"><div class="value">{{ stats.unpaid_invoices }}</div><div class="label">Unpaid Invoices</div></article>
+</section>
+<section class="grid-2" style="margin-top:12px;">
+  <div class="card stack">
+    <h3>Active Cases</h3>
+    <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Client</th><th>Status</th></tr></thead><tbody>
+    {% for case in active_cases %}
+      <tr><td><a href="{{ url_for('cases_view', case_id=case.id) }}">{{ case.reference_number }}</a></td><td>{{ case.client.full_name }}</td><td><span class="badge {{ case.status }}">{{ case.status }}</span></td></tr>
+    {% else %}<tr><td colspan="3">No active cases.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </div>
+  <div class="card stack">
+    <h3>Upcoming Deadlines</h3>
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Case</th><th>Type</th></tr></thead><tbody>
+    {% for d in upcoming_deadlines %}
+      <tr><td>{{ d.due_date.strftime('%Y-%m-%d %H:%M') }}</td><td>{{ d.case.reference_number }}</td><td>{{ d.kind }}</td></tr>
+    {% else %}<tr><td colspan="3">No upcoming deadlines.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </div>
+</section>
+<section class="card stack" style="margin-top:12px;">
+  <h3>Recent Activities</h3>
+  <div class="table-wrap"><table><thead><tr><th>Time</th><th>User</th><th>Action</th></tr></thead><tbody>
+    {% for act in recent_activities %}
+      <tr><td>{{ act.created_at.strftime('%Y-%m-%d %H:%M') }}</td><td>{{ act.user.full_name if act.user else 'System' }}</td><td>{{ act.action }}</td></tr>
+    {% else %}<tr><td colspan="3">No activity yet.</td></tr>{% endfor %}
+  </tbody></table></div>
+</section>
+{% endblock %}

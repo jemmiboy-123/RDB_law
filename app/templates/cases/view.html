@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar">
+  <h1>{{ case.reference_number }} <small style="font-size:.5em;color:var(--muted);">{{ case.title }}</small></h1>
+  {% if current_user.role in ['admin','lawyer','staff'] %}<a class="btn" href="{{ url_for('cases_edit', case_id=case.id) }}">Edit Case</a>{% endif %}
+</div>
+<div class="grid-2">
+  <section class="card stack">
+    <h3>Case Details</h3>
+    <p>Status: <span class="badge {{ case.status }}">{{ case.status }}</span></p>
+    <p>Client: <a href="{{ url_for('clients_view', client_id=case.client.id) }}">{{ case.client.full_name }}</a></p>
+    <p>Opened: {{ case.opened_on }}</p>
+    <p>Lawyers: {{ case.lawyers|map(attribute='full_name')|join(', ') or '-' }}</p>
+    <p>{{ case.description or 'No description' }}</p>
+  </section>
+  <section class="card stack">
+    <h3>Case Notes</h3>
+    {% if current_user.role in ['admin','lawyer','staff'] %}
+    <form method="post" class="form-grid">
+      <textarea name="note" placeholder="Add a case update..."></textarea>
+      <button type="submit">Add Note</button>
+    </form>
+    {% endif %}
+    <div class="table-wrap"><table><thead><tr><th>When</th><th>Author</th><th>Note</th></tr></thead><tbody>
+      {% for n in notes %}
+      <tr><td>{{ n.created_at.strftime('%Y-%m-%d %H:%M') }}</td><td>{{ n.author.full_name }}</td><td>{{ n.body }}</td></tr>
+      {% else %}<tr><td colspan="3">No notes yet.</td></tr>{% endfor %}
+    </tbody></table></div>
+  </section>
+</div>
+<section class="grid-2" style="margin-top:12px;">
+  <div class="card stack"><h3>Documents</h3><div class="table-wrap"><table><thead><tr><th>Name</th><th>Category</th></tr></thead><tbody>{% for d in documents %}<tr><td>{{ d.original_name }}</td><td>{{ d.category }}</td></tr>{% else %}<tr><td colspan="2">No docs yet.</td></tr>{% endfor %}</tbody></table></div></div>
+  <div class="card stack"><h3>Tasks</h3><div class="table-wrap"><table><thead><tr><th>Task</th><th>Assignee</th><th>Status</th></tr></thead><tbody>{% for t in tasks %}<tr><td>{{ t.title }}</td><td>{{ t.assignee.full_name }}</td><td><span class="badge {{ t.status }}">{{ t.status }}</span></td></tr>{% else %}<tr><td colspan="3">No tasks yet.</td></tr>{% endfor %}</tbody></table></div></div>
+</section>
+{% endblock %}

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="auth-card">
+  <h1>Law Firm Management</h1>
+  <p>Sign in to access cases, deadlines, billing, and staff workflows.</p>
+  <form method="post" class="form-grid">
+    <label>Email<input type="email" name="email" required></label>
+    <label>Password<input type="password" name="password" required></label>
+    <button type="submit">Sign In</button>
+  </form>
+  <small>Default admin: admin@lawfirm.local / admin12345</small>
+</section>
+{% endblock %}

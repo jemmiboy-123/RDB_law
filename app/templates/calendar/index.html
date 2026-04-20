@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar"><h1>Calendar & Deadlines</h1></div>
+{% if current_user.role in ['admin','lawyer','staff'] %}
+<form method="post" class="card form-grid" style="margin-bottom:12px;">
+  <div class="grid-2">
+    <label>Case<select name="case_id">{% for case in cases %}<option value="{{ case.id }}">{{ case.reference_number }}</option>{% endfor %}</select></label>
+    <label>Type<select name="kind"><option value="court_date">Court Date</option><option value="deadline">Deadline</option></select></label>
+  </div>
+  <div class="grid-2">
+    <label>Title<input name="title" required></label>
+    <label>Date & Time<input type="datetime-local" name="due_date" required></label>
+  </div>
+  <div><button type="submit">Add Event</button></div>
+</form>
+{% endif %}
+<section class="card table-wrap">
+<table><thead><tr><th>Date</th><th>Case</th><th>Type</th><th>Title</th></tr></thead><tbody>
+  {% for d in deadlines %}
+  <tr><td>{{ d.due_date.strftime('%Y-%m-%d %H:%M') }}</td><td>{{ d.case.reference_number }}</td><td>{{ d.kind }}</td><td>{{ d.title }}</td></tr>
+  {% else %}<tr><td colspan="4">No calendar events yet.</td></tr>{% endfor %}
+</tbody></table>
+</section>
+{% endblock %}

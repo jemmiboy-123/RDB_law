@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar"><h1>Documents</h1></div>
+{% if current_user.role in ['admin','lawyer','staff'] %}
+<form method="post" enctype="multipart/form-data" class="card form-grid" style="margin-bottom:12px;">
+  <div class="grid-2">
+    <label>Case
+      <select name="case_id">{% for case in cases %}<option value="{{ case.id }}">{{ case.reference_number }} - {{ case.title }}</option>{% endfor %}</select>
+    </label>
+    <label>Category<input name="category" placeholder="Pleadings, Contract, Evidence"></label>
+  </div>
+  <label>Description<input name="description"></label>
+  <label>File<input type="file" name="file" required></label>
+  <div><button type="submit">Upload Document</button></div>
+</form>
+{% endif %}
+<form class="card inline" method="get" style="margin-bottom:12px;">
+  <input name="q" placeholder="Search filename" value="{{ query }}">
+  <select name="case_id"><option value="">All Cases</option>{% for case in cases %}<option value="{{ case.id }}" {% if case_filter and case_filter|int == case.id %}selected{% endif %}>{{ case.reference_number }}</option>{% endfor %}</select>
+  <button type="submit">Filter</button>
+</form>
+<section class="card table-wrap">
+<table><thead><tr><th>File</th><th>Case</th><th>Category</th><th>Uploaded</th><th></th></tr></thead><tbody>
+  {% for d in documents %}
+  <tr><td>{{ d.original_name }}</td><td><a href="{{ url_for('cases_view', case_id=d.case.id) }}">{{ d.case.reference_number }}</a></td><td>{{ d.category }}</td><td>{{ d.created_at.strftime('%Y-%m-%d') }}</td><td><a class="btn btn-ghost" href="{{ url_for('documents_download', doc_id=d.id) }}">Download</a></td></tr>
+  {% else %}<tr><td colspan="5">No documents found.</td></tr>{% endfor %}
+</tbody></table>
+</section>
+{% endblock %}

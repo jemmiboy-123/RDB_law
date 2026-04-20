@@ -1,0 +1,28 @@
+<%- include('../partials/header', {title: 'User Administration'}) %>
+<div class="topbar"><h1>User Administration</h1></div>
+<form method="post" class="card form-grid" style="margin-bottom:12px;">
+  <div class="grid-2">
+    <label>Full Name<input name="full_name" required></label>
+    <label>Email<input type="email" name="email" required></label>
+  </div>
+  <div class="grid-2">
+    <label>Password<input type="password" name="password" required></label>
+    <label>Role
+      <select name="role">
+        <option value="admin">Admin</option>
+        <option value="lawyer">Lawyer</option>
+        <option value="staff">Staff</option>
+        <option value="client">Client</option>
+      </select>
+    </label>
+  </div>
+  <div><button type="submit">Create User</button></div>
+</form>
+<section class="card table-wrap">
+<table><thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Created</th></tr></thead><tbody>
+  <% if (users.length) { users.forEach(u => { %>
+  <tr><td><%= u.full_name %></td><td><%= u.email %></td><td><span class="badge"><%= u.role %></span></td><td><%= fmtDate(u.created_at) %></td></tr>
+  <% }) } else { %><tr><td colspan="4">No users found.</td></tr><% } %>
+</tbody></table>
+</section>
+<%- include('../partials/footer') %>

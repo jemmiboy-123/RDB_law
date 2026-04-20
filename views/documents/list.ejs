@@ -1,0 +1,37 @@
+<%- include('../partials/header', {title: 'Documents'}) %>
+<div class="topbar"><h1>Documents</h1></div>
+<% if (['admin','lawyer','staff'].includes(user.role)) { %>
+<form method="post" enctype="multipart/form-data" class="card form-grid" style="margin-bottom:12px;">
+  <div class="grid-2">
+    <label>Case
+      <select name="case_id"><% cases.forEach(c => { %><option value="<%= c.id %>"><%= c.reference_number %></option><% }) %></select>
+    </label>
+    <label>Category<input name="category" placeholder="Pleadings, Contract, Evidence"></label>
+  </div>
+  <label>Description<input name="description"></label>
+  <label>File<input type="file" name="file" required></label>
+  <div><button type="submit">Upload Document</button></div>
+</form>
+<% } %>
+<form class="card inline" method="get" style="margin-bottom:12px;">
+  <input name="q" placeholder="Search filename" value="<%= query %>">
+  <select name="case_id">
+    <option value="">All Cases</option>
+    <% cases.forEach(c => { %><option value="<%= c.id %>" <%= (case_filter && case_filter == c.id) ? 'selected' : '' %>><%= c.reference_number %></option><% }) %>
+  </select>
+  <button type="submit">Filter</button>
+</form>
+<section class="card table-wrap">
+<table><thead><tr><th>File</th><th>Case</th><th>Category</th><th>Uploaded</th><th></th></tr></thead><tbody>
+  <% if (documents.length) { documents.forEach(d => { %>
+  <tr>
+    <td><%= d.original_name %></td>
+    <td><% if (d.case) { %><a href="/cases/<%= d.case.id %>"><%= d.case.reference_number %></a><% } %></td>
+    <td><%= d.category %></td>
+    <td><%= fmtDate(d.created_at) %></td>
+    <td><a class="btn btn-ghost" href="/documents/<%= d.id %>/download">Download</a></td>
+  </tr>
+  <% }) } else { %><tr><td colspan="5">No documents found.</td></tr><% } %>
+</tbody></table>
+</section>
+<%- include('../partials/footer') %>

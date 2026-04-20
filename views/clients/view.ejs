@@ -1,0 +1,24 @@
+<%- include('../partials/header', {title: client.full_name}) %>
+<div class="topbar">
+  <h1><%= client.full_name %></h1>
+  <% if (['admin','lawyer','staff'].includes(user.role)) { %><a class="btn" href="/clients/<%= client.id %>/edit">Edit</a><% } %>
+</div>
+<div class="grid-2">
+  <section class="card stack">
+    <h3>Contact</h3>
+    <p>Email: <%= client.email || '-' %></p>
+    <p>Phone: <%= client.phone || '-' %></p>
+    <p>Address: <%= client.address || '-' %></p>
+    <p>Company: <%= client.company || '-' %></p>
+  </section>
+  <section class="card stack">
+    <h3>Case History</h3>
+    <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Status</th><th>Opened</th></tr></thead><tbody>
+    <% if (client_cases.length) { client_cases.forEach(c => { %>
+      <tr><td><a href="/cases/<%= c.id %>"><%= c.reference_number %></a></td><td><span class="badge <%= c.status %>"><%= c.status %></span></td><td><%= fmtDate(c.opened_on) %></td></tr>
+    <% }) } else { %><tr><td colspan="3">No cases found.</td></tr><% } %>
+    </tbody></table></div>
+  </section>
+</div>
+<section class="card" style="margin-top:12px;"><h3>Notes</h3><p><%= client.notes || 'No notes' %></p></section>
+<%- include('../partials/footer') %>

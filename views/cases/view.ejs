@@ -1,0 +1,39 @@
+<%- include('../partials/header', {title: case.reference_number}) %>
+<% const c = case; %>
+<div class="topbar">
+  <h1><%= c.reference_number %> <small style="font-size:.5em;color:var(--muted);"><%= c.title %></small></h1>
+  <% if (['admin','lawyer','staff'].includes(user.role)) { %><a class="btn" href="/cases/<%= c.id %>/edit">Edit Case</a><% } %>
+</div>
+<div class="grid-2">
+  <section class="card stack">
+    <h3>Case Details</h3>
+    <p>Status: <span class="badge <%= c.status %>"><%= c.status %></span></p>
+    <p>Client: <a href="/clients/<%= c.client.id %>"><%= c.client.full_name %></a></p>
+    <p>Opened: <%= fmtDate(c.opened_on) %></p>
+    <p>Lawyers: <%= c.lawyers.map(l => l.full_name).join(', ') || '-' %></p>
+    <p><%= c.description || 'No description' %></p>
+  </section>
+  <section class="card stack">
+    <h3>Case Notes</h3>
+    <% if (['admin','lawyer','staff'].includes(user.role)) { %>
+    <form method="post" action="/cases/<%= c.id %>" class="form-grid">
+      <textarea name="note" placeholder="Add a case update..."></textarea>
+      <button type="submit">Add Note</button>
+    </form>
+    <% } %>
+    <div class="table-wrap"><table><thead><tr><th>When</th><th>Author</th><th>Note</th></tr></thead><tbody>
+      <% if (notes.length) { notes.forEach(n => { %>
+      <tr><td><%= fmtDateTime(n.created_at) %></td><td><%= n.author_name %></td><td><%= n.body %></td></tr>
+      <% }) } else { %><tr><td colspan="3">No notes yet.</td></tr><% } %>
+    </tbody></table></div>
+  </section>
+</div>
+<section class="grid-2" style="margin-top:12px;">
+  <div class="card stack"><h3>Documents</h3><div class="table-wrap"><table><thead><tr><th>Name</th><th>Category</th></tr></thead><tbody>
+    <% if (documents.length) { documents.forEach(d => { %><tr><td><%= d.original_name %></td><td><%= d.category %></td></tr><% }) } else { %><tr><td colspan="2">No docs yet.</td></tr><% } %>
+  </tbody></table></div></div>
+  <div class="card stack"><h3>Tasks</h3><div class="table-wrap"><table><thead><tr><th>Task</th><th>Assignee</th><th>Status</th></tr></thead><tbody>
+    <% if (tasks.length) { tasks.forEach(t => { %><tr><td><%= t.title %></td><td><%= t.assignee_name %></td><td><span class="badge <%= t.status %>"><%= t.status %></span></td></tr><% }) } else { %><tr><td colspan="3">No tasks yet.</td></tr><% } %>
+  </tbody></table></div></div>
+</section>
+<%- include('../partials/footer') %>

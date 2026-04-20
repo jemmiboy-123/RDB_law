@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="topbar"><h1>Task Management</h1></div>
+{% if current_user.role in ['admin','lawyer','staff'] %}
+<form method="post" class="card form-grid" style="margin-bottom:12px;">
+  <div class="grid-2">
+    <label>Case<select name="case_id">{% for case in cases %}<option value="{{ case.id }}">{{ case.reference_number }}</option>{% endfor %}</select></label>
+    <label>Assignee<select name="assignee_id">{% for person in staff %}<option value="{{ person.id }}">{{ person.full_name }}</option>{% endfor %}</select></label>
+  </div>
+  <div class="grid-2">
+    <label>Task Title<input name="title" required></label>
+    <label>Due Date<input type="date" name="due_date"></label>
+  </div>
+  <label>Details<textarea name="details"></textarea></label>
+  <label>Initial Status<select name="status"><option value="todo">To Do</option><option value="in_progress">In Progress</option><option value="done">Done</option></select></label>
+  <div><button type="submit">Create Task</button></div>
+</form>
+{% endif %}
+<section class="card table-wrap">
+<table><thead><tr><th>Case</th><th>Task</th><th>Assignee</th><th>Due</th><th>Status</th><th>Update</th></tr></thead><tbody>
+  {% for t in tasks %}
+  <tr>
+    <td>{{ t.case.reference_number }}</td><td>{{ t.title }}</td><td>{{ t.assignee.full_name }}</td><td>{{ t.due_date or '-' }}</td>
+    <td><span class="badge {{ t.status }}">{{ t.status }}</span></td>
+    <td>
+      {% if current_user.role in ['admin'] or current_user.id == t.assignee_id %}
+      <form method="post" action="{{ url_for('tasks_status', task_id=t.id) }}" class="inline">
+        <select name="status"><option value="todo">To Do</option><option value="in_progress">In Progress</option><option value="done">Done</option></select>
+        <button type="submit" class="btn btn-ghost">Save</button>
+      </form>
+      {% else %}-{% endif %}
+    </td>
+  </tr>
+  {% else %}<tr><td colspan="6">No tasks yet.</td></tr>{% endfor %}
+</tbody></table>
+</section>
+{% endblock %}

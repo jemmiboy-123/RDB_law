@@ -1,0 +1,47 @@
+<%- include('../partials/header', {title: 'Task Management'}) %>
+<div class="topbar"><h1>Task Management</h1></div>
+<% if (['admin','lawyer','staff'].includes(user.role)) { %>
+<form method="post" class="card form-grid" style="margin-bottom:12px;">
+  <div class="grid-2">
+    <label>Case<select name="case_id"><% cases.forEach(c => { %><option value="<%= c.id %>"><%= c.reference_number %></option><% }) %></select></label>
+    <label>Assignee<select name="assignee_id"><% staff.forEach(s => { %><option value="<%= s.id %>"><%= s.full_name %></option><% }) %></select></label>
+  </div>
+  <div class="grid-2">
+    <label>Task Title<input name="title" required></label>
+    <label>Due Date<input type="date" name="due_date"></label>
+  </div>
+  <label>Details<textarea name="details"></textarea></label>
+  <label>Initial Status
+    <select name="status">
+      <option value="todo">To Do</option>
+      <option value="in_progress">In Progress</option>
+      <option value="done">Done</option>
+    </select>
+  </label>
+  <div><button type="submit">Create Task</button></div>
+</form>
+<% } %>
+<section class="card table-wrap">
+<table><thead><tr><th>Case</th><th>Task</th><th>Assignee</th><th>Due</th><th>Status</th><th>Update</th></tr></thead><tbody>
+  <% if (tasks.length) { tasks.forEach(t => { %>
+  <tr>
+    <td><%= t.case_ref %></td><td><%= t.title %></td><td><%= t.assignee_name %></td>
+    <td><%= t.due_date ? fmtDate(t.due_date) : '-' %></td>
+    <td><span class="badge <%= t.status %>"><%= t.status %></span></td>
+    <td>
+      <% if (user.role === 'admin' || user.id == t.assignee_id) { %>
+      <form method="post" action="/tasks/<%= t.id %>/status" class="inline">
+        <select name="status">
+          <option value="todo">To Do</option>
+          <option value="in_progress">In Progress</option>
+          <option value="done">Done</option>
+        </select>
+        <button type="submit" class="btn btn-ghost">Save</button>
+      </form>
+      <% } else { %>-<% } %>
+    </td>
+  </tr>
+  <% }) } else { %><tr><td colspan="6">No tasks yet.</td></tr><% } %>
+</tbody></table>
+</section>
+<%- include('../partials/footer') %>

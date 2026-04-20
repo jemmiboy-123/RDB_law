@@ -1,0 +1,38 @@
+<%- include('../partials/header', {title: (typeof case !== 'undefined' && case) ? 'Edit Case' : 'New Case'}) %>
+<div class="topbar"><h1><%= (typeof case !== 'undefined' && case) ? 'Edit Case' : 'New Case' %></h1></div>
+<% const c = (typeof case !== 'undefined') ? case : null; %>
+<form method="post" class="card form-grid">
+  <div class="grid-2">
+    <label>Case Title<input name="title" required value="<%= c ? c.title : '' %>"></label>
+    <label>Reference Number<input name="reference_number" required value="<%= c ? c.reference_number : '' %>"></label>
+  </div>
+  <div class="grid-2">
+    <label>Case Type<input name="case_type" value="<%= c ? (c.case_type||'') : '' %>"></label>
+    <label>Client
+      <select name="client_id" required>
+        <% clients.forEach(cl => { %><option value="<%= cl.id %>" <%= (c && c.client_id == cl.id) ? 'selected' : '' %>><%= cl.full_name %></option><% }) %>
+      </select>
+    </label>
+  </div>
+  <div class="grid-2">
+    <label>Status
+      <select name="status">
+        <option value="open" <%= (!c || c.status==='open') ? 'selected' : '' %>>Open</option>
+        <option value="pending" <%= (c && c.status==='pending') ? 'selected' : '' %>>Pending</option>
+        <option value="closed" <%= (c && c.status==='closed') ? 'selected' : '' %>>Closed</option>
+      </select>
+    </label>
+    <label>Opened On<input type="date" name="opened_on" value="<%= c ? fmtDate(c.opened_on) : '' %>"></label>
+  </div>
+  <% if (c) { %><label>Closed On<input type="date" name="closed_on" value="<%= c.closed_on ? fmtDate(c.closed_on) : '' %>"></label><% } %>
+  <label>Assign Lawyers
+    <select name="lawyers" multiple size="5">
+      <% lawyers.forEach(l => { %>
+      <option value="<%= l.id %>" <%= (c && c.lawyers && c.lawyers.find(x => x.id == l.id)) ? 'selected' : '' %>><%= l.full_name %></option>
+      <% }) %>
+    </select>
+  </label>
+  <label>Description<textarea name="description"><%= c ? (c.description||'') : '' %></textarea></label>
+  <div class="actions"><button type="submit">Save Case</button><a class="btn btn-ghost" href="/cases">Cancel</a></div>
+</form>
+<%- include('../partials/footer') %>

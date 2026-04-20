@@ -1,0 +1,64 @@
+<%- include('../partials/header', {title: 'Billing & Invoicing'}) %>
+<div class="topbar"><h1>Billing &amp; Invoicing</h1></div>
+<% if (['admin','lawyer'].includes(user.role)) { %>
+<section class="card form-grid" style="margin-bottom:12px;">
+  <h3>Log Billable Hours</h3>
+  <form method="post" action="/billing" class="form-grid">
+    <div class="grid-2">
+      <label>Case<select name="case_id"><% cases.forEach(c => { %><option value="<%= c.id %>"><%= c.reference_number %></option><% }) %></select></label>
+      <label>Lawyer<select name="lawyer_id"><% lawyers.forEach(l => { %><option value="<%= l.id %>"><%= l.full_name %></option><% }) %></select></label>
+    </div>
+    <div class="grid-2">
+      <label>Date<input type="date" name="entry_date"></label>
+      <label>Hours<input type="number" step="0.1" min="0" name="hours" required></label>
+    </div>
+    <div class="grid-2">
+      <label>Rate<input type="number" step="0.01" min="0" name="rate" required></label>
+      <label>Description<input name="description" required></label>
+    </div>
+    <div><button type="submit">Add Time Entry</button></div>
+  </form>
+</section>
+<section class="card form-grid" style="margin-bottom:12px;">
+  <h3>Generate Invoice from Unbilled Hours</h3>
+  <form method="post" action="/billing/invoices/new" class="grid-2">
+    <label>Client<select name="client_id"><% clients.forEach(cl => { %><option value="<%= cl.id %>"><%= cl.full_name %></option><% }) %></select></label>
+    <label>Due Date<input type="date" name="due_date"></label>
+    <label>Tax Rate %<input type="number" step="0.1" min="0" name="tax_rate" value="0"></label>
+    <div><button type="submit">Generate Invoice</button></div>
+  </form>
+</section>
+<% } %>
+<div class="grid-2">
+  <section class="card stack">
+    <h3>Recent Time Entries</h3>
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Case</th><th>Lawyer</th><th>Hours</th><th>Billed</th></tr></thead><tbody>
+    <% if (entries.length) { entries.forEach(e => { %>
+      <tr><td><%= fmtDate(e.entry_date) %></td><td><%= e.case_ref %></td><td><%= e.lawyer_name %></td><td><%= parseFloat(e.hours).toFixed(2) %></td><td><%= e.billed ? 'Yes' : 'No' %></td></tr>
+    <% }) } else { %><tr><td colspan="5">No time entries yet.</td></tr><% } %>
+    </tbody></table></div>
+  </section>
+  <section class="card stack">
+    <h3>Invoices</h3>
+    <div class="table-wrap"><table><thead><tr><th>No.</th><th>Client</th><th>Total</th><th>Status</th><th>Payment</th></tr></thead><tbody>
+    <% if (invoices.length) { invoices.forEach(inv => { %>
+      <tr>
+        <td><%= inv.invoice_number %></td><td><%= inv.client_name %></td>
+        <td><%= parseFloat(inv.total).toFixed(2) %></td>
+        <td><span class="badge <%= inv.status %>"><%= inv.status %></span></td>
+        <td>
+          <% if (['admin','lawyer','staff'].includes(user.role) && inv.status !== 'paid') { %>
+          <form method="post" action="/billing/invoices/<%= inv.id %>/payment" class="inline">
+            <input name="amount" type="number" step="0.01" min="0" placeholder="Amount" required>
+            <input name="payment_date" type="date">
+            <select name="method"><option value="bank_transfer">Bank</option><option value="card">Card</option><option value="cash">Cash</option></select>
+            <button class="btn btn-ghost" type="submit">Record</button>
+          </form>
+          <% } else { %>-<% } %>
+        </td>
+      </tr>
+    <% }) } else { %><tr><td colspan="5">No invoices yet.</td></tr><% } %>
+    </tbody></table></div>
+  </section>
+</div>
+<%- include('../partials/footer') %>

@@ -1,0 +1,35 @@
+<%- include('../partials/header', {title: 'Dashboard'}) %>
+<div class="topbar"><h1>Dashboard</h1></div>
+<section class="grid-4">
+  <article class="kpi"><div class="value"><%= stats.active_cases %></div><div class="label">Active Cases</div></article>
+  <article class="kpi"><div class="value"><%= stats.upcoming_deadlines %></div><div class="label">Upcoming Deadlines</div></article>
+  <article class="kpi"><div class="value"><%= stats.open_tasks %></div><div class="label">Open Tasks</div></article>
+  <article class="kpi"><div class="value"><%= stats.unpaid_invoices %></div><div class="label">Unpaid Invoices</div></article>
+</section>
+<section class="grid-2" style="margin-top:12px;">
+  <div class="card stack">
+    <h3>Active Cases</h3>
+    <div class="table-wrap"><table><thead><tr><th>Reference</th><th>Client</th><th>Status</th></tr></thead><tbody>
+    <% if (active_cases.length) { active_cases.forEach(c => { %>
+      <tr><td><a href="/cases/<%= c.id %>"><%= c.reference_number %></a></td><td><%= c.client ? c.client.full_name : '' %></td><td><span class="badge <%= c.status %>"><%= c.status %></span></td></tr>
+    <% }) } else { %><tr><td colspan="3">No active cases.</td></tr><% } %>
+    </tbody></table></div>
+  </div>
+  <div class="card stack">
+    <h3>Upcoming Deadlines</h3>
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Case</th><th>Type</th></tr></thead><tbody>
+    <% if (upcoming_deadlines.length) { upcoming_deadlines.forEach(d => { %>
+      <tr><td><%= fmtDateTime(d.due_date) %></td><td><%= d.case_ref || d.case_ref %></td><td><%= d.kind %></td></tr>
+    <% }) } else { %><tr><td colspan="3">No upcoming deadlines.</td></tr><% } %>
+    </tbody></table></div>
+  </div>
+</section>
+<section class="card stack" style="margin-top:12px;">
+  <h3>Recent Activities</h3>
+  <div class="table-wrap"><table><thead><tr><th>Time</th><th>User</th><th>Action</th></tr></thead><tbody>
+    <% if (recent_activities.length) { recent_activities.forEach(a => { %>
+      <tr><td><%= fmtDateTime(a.created_at) %></td><td><%= a.user_name || 'System' %></td><td><%= a.action %></td></tr>
+    <% }) } else { %><tr><td colspan="3">No activity yet.</td></tr><% } %>
+  </tbody></table></div>
+</section>
+<%- include('../partials/footer') %>
