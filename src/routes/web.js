@@ -151,10 +151,10 @@ router.get('/dashboard', requireLogin, (req, res) => {
 // ─── Clients ─────────────────────────────────────────────────────────────
 router.get('/clients', requireLogin, requireWebRole('admin', 'lawyer', 'staff'), (req, res) => {
   const query = (req.query.q || '').trim();
-  const clients = db.prepare(
-    query ? 'SELECT * FROM client WHERE full_name LIKE ? ORDER BY full_name ASC'
-          : 'SELECT * FROM client ORDER BY full_name ASC'
-  ).all(query ? `%${query}%` : undefined).map(c => {
+  const clients = (query
+    ? db.prepare('SELECT * FROM client WHERE full_name LIKE ? ORDER BY full_name ASC').all(`%${query}%`)
+    : db.prepare('SELECT * FROM client ORDER BY full_name ASC').all()
+  ).map(c => {
     c.case_count = db.prepare('SELECT COUNT(*) as n FROM "case" WHERE client_id = ?').get(c.id).n;
     return c;
   });

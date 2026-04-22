@@ -10,16 +10,29 @@ import BillingView from "./views/BillingView.jsx";
 import NotificationsView from "./views/NotificationsView.jsx";
 import UsersView from "./views/UsersView.jsx";
 
+const ICONS = {
+  dashboard: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="1" width="6" height="6" rx="1.2"/><rect x="9" y="1" width="6" height="6" rx="1.2"/><rect x="1" y="9" width="6" height="6" rx="1.2"/><rect x="9" y="9" width="6" height="6" rx="1.2"/></svg>,
+  clients:   <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="8" cy="5.5" r="2.5"/><path d="M2 14c0-3.3 2.7-5.5 6-5.5s6 2.2 6 5.5H2z"/></svg>,
+  cases:     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1" y="6" width="14" height="9" rx="1.5"/><path d="M5.5 6V4.5a2.5 2.5 0 0 1 5 0V6"/></svg>,
+  documents: <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3.5 1h6l4 4v10.5H3.5V1z"/><path d="M9.5 1v4.5H14"/></svg>,
+  calendar:  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1.5" y="3" width="13" height="11.5" rx="1.5"/><path d="M1.5 7.5h13M5 1.5v3M11 1.5v3"/></svg>,
+  tasks:     <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="1.5" y="1.5" width="13" height="13" rx="1.5"/><path d="M5 8l2 2 4-4"/></svg>,
+  billing:   <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><rect x="1" y="4" width="14" height="10" rx="1.5"/><path d="M1 8h14M5 11.5h3"/></svg>,
+  notifications: <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 1.5A4 4 0 0 0 4 5.5V9L2.5 10.5v.5h11v-.5L12 9V5.5A4 4 0 0 0 8 1.5zM6.5 12.5a1.5 1.5 0 0 0 3 0h-3z"/></svg>,
+  users:     <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><circle cx="5.5" cy="5" r="2.2"/><path d="M1 13.5c0-2.5 2-4.5 4.5-4.5S10 11 10 13.5H1z"/><circle cx="12" cy="5" r="1.8" opacity=".55"/><path d="M11.5 10c2 .3 3.5 1.8 3.5 3.5H11" opacity=".55"/></svg>,
+  logout:    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 13H3a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h3M10.5 11l3-3-3-3M13.5 8H6"/></svg>,
+};
+
 const NAV = [
-  { id: "dashboard", label: "Dashboard", roles: ["admin", "lawyer", "staff", "client"] },
-  { id: "clients", label: "Clients", roles: ["admin", "lawyer", "staff"] },
-  { id: "cases", label: "Cases", roles: ["admin", "lawyer", "staff", "client"] },
-  { id: "documents", label: "Documents", roles: ["admin", "lawyer", "staff", "client"] },
-  { id: "calendar", label: "Calendar", roles: ["admin", "lawyer", "staff", "client"] },
-  { id: "tasks", label: "Tasks", roles: ["admin", "lawyer", "staff", "client"] },
-  { id: "billing", label: "Billing", roles: ["admin", "lawyer", "staff", "client"] },
-  { id: "notifications", label: "Notifications", roles: ["admin", "lawyer", "staff", "client"] },
-  { id: "users", label: "User Admin", roles: ["admin"] }
+  { id: "dashboard",     label: "Dashboard",     icon: "dashboard",     roles: ["admin", "lawyer", "staff", "client"] },
+  { id: "clients",       label: "Clients",        icon: "clients",       roles: ["admin", "lawyer", "staff"] },
+  { id: "cases",         label: "Cases",          icon: "cases",         roles: ["admin", "lawyer", "staff", "client"] },
+  { id: "documents",     label: "Documents",      icon: "documents",     roles: ["admin", "lawyer", "staff", "client"] },
+  { id: "calendar",      label: "Calendar",       icon: "calendar",      roles: ["admin", "lawyer", "staff", "client"] },
+  { id: "tasks",         label: "Tasks",          icon: "tasks",         roles: ["admin", "lawyer", "staff", "client"] },
+  { id: "billing",       label: "Billing",        icon: "billing",       roles: ["admin", "lawyer", "staff", "client"] },
+  { id: "notifications", label: "Notifications",  icon: "notifications", roles: ["admin", "lawyer", "staff", "client"] },
+  { id: "users",         label: "User Admin",     icon: "users",         roles: ["admin"] },
 ];
 
 function App() {
@@ -30,7 +43,7 @@ function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
-  const [login, setLogin] = useState({ email: "admin@lawfirm.local", password: "admin12345" });
+  const [login, setLogin] = useState({ email: "", password: "" });
 
   const visibleNav = useMemo(() => (user ? NAV.filter((item) => item.roles.includes(user.role)) : []), [user]);
 
@@ -156,11 +169,12 @@ function App() {
                 }
               }}
             >
+              {ICONS[item.icon]}
               {item.label}
             </button>
           ))}
         </nav>
-        <button className="logout" onClick={doLogout}>Logout</button>
+        <button className="logout" onClick={doLogout}>{ICONS.logout} Sign Out</button>
       </aside>
       <main className="content">
         <header className="top">

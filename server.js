@@ -1,5 +1,7 @@
 'use strict';
 
+require('dotenv').config();
+
 const express = require('express');
 const session = require('express-session');
 const path = require('path');
@@ -8,6 +10,7 @@ const fs = require('fs');
 const { seedAdmin } = require('./src/db');
 const apiRouter = require('./src/routes/api');
 const webRouter = require('./src/routes/web');
+const SqliteStore = require('better-sqlite3-session-store')(session);
 
 const app = express();
 
@@ -23,11 +26,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use('/static', express.static(path.join(__dirname, 'app', 'static')));
 
 // ─── Sessions ─────────────────────────────────────────────────────────────
+const SECRET_KEY = process.env.SECRET_KEY;
+if (!SECRET_KEY) {
+  console.error('FATAL: SECRET_KEY environment variable is not set. Refusing to start.');
+  process.exit(1);
+}
+
+const Database = require('better-sqlite3');
+const sessionDb = new Database(path.join(__dirname, 'sessions.db'));
+
 app.use(session({
-  secret: process.env.SECRET_KEY || 'change-this-in-production',
+  store: new SqliteStore({ client: sessionDb }),
+  secret: SECRET_KEY,
   resave: false,
   saveUninitialized: false,
-  cookie: { maxAge: 12 * 60 * 60 * 1000 },
+  cookie: { maxAge: 12 * 60 * 60 * 1000, httpOnly: true, sameSite: 'lax' },
 }));
 
 // ─── Flash + auth locals ──────────────────────────────────────────────────
@@ -40,7 +53,7 @@ app.use((req, res, next) => {
 });
 
 // ─── Seed ─────────────────────────────────────────────────────────────────
-seedAdmin();
+seedAdmin().catch(e => console.error('Seed error:', e.message));
 
 // ─── Routes ───────────────────────────────────────────────────────────────
 app.use('/api', apiRouter);

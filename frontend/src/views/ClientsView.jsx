@@ -1,5 +1,4 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
 import { api } from "../api.js";
 import Card from "../components/Card.jsx";
 
@@ -14,10 +13,7 @@ function ClientsView({ user, payload, meta, onDone, setMessage, setError }) {
     try {
       await api("/api/clients", {
         method: "POST",
-        data: {
-          ...form,
-          portal_user_id: form.portal_user_id ? Number(form.portal_user_id) : null
-        }
+        data: { ...form, portal_user_id: form.portal_user_id ? Number(form.portal_user_id) : null },
       });
       setForm(EMPTY);
       setMessage("Client created.");
@@ -33,24 +29,39 @@ function ClientsView({ user, payload, meta, onDone, setMessage, setError }) {
         <form className="panel form-grid" onSubmit={submit}>
           <h3>New Client</h3>
           <div className="two-col compact">
-            <input placeholder="Full name" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} />
-            <input placeholder="Email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
-            <input placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
-            <input placeholder="Company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} />
+            <label>Full Name<input placeholder="e.g. Juan dela Cruz" value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} /></label>
+            <label>Email<input type="email" placeholder="email@example.com" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></label>
+            <label>Phone<input placeholder="+63 912 345 6789" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></label>
+            <label>Company<input placeholder="Company name (optional)" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} /></label>
           </div>
-          <input placeholder="Address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} />
-          <textarea placeholder="Notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
-          <select value={form.portal_user_id} onChange={(e) => setForm({ ...form, portal_user_id: e.target.value })}>
-            <option value="">No portal user</option>
-            {meta.users.filter((u) => u.role === "client").map((u) => <option key={u.id} value={u.id}>{u.full_name}</option>)}
-          </select>
+          <label>Address<input placeholder="Street, City, Province" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></label>
+          <label>Notes<textarea placeholder="Additional notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></label>
+          <label>Portal User (optional)
+            <select value={form.portal_user_id} onChange={(e) => setForm({ ...form, portal_user_id: e.target.value })}>
+              <option value="">No portal user</option>
+              {meta.users.filter((u) => u.role === "client").map((u) => <option key={u.id} value={u.id}>{u.full_name}</option>)}
+            </select>
+          </label>
           <button type="submit">Create Client</button>
         </form>
       )}
       <Card title="Client List">
-        <table><thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Company</th></tr></thead><tbody>
-          {items.map((item) => <tr key={item.id}><td>{item.full_name}</td><td>{item.email}</td><td>{item.phone}</td><td>{item.company}</td></tr>)}
-        </tbody></table>
+        {items.length === 0
+          ? <p className="empty-state">No clients yet.</p>
+          : <table>
+              <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Company</th></tr></thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td>{item.full_name}</td>
+                    <td>{item.email}</td>
+                    <td>{item.phone || "—"}</td>
+                    <td>{item.company || "—"}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+        }
       </Card>
     </section>
   );

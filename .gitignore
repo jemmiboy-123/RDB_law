@@ -1,0 +1,6 @@
+.env
+*.db
+sessions.db
+node_modules/
+app/uploads/
+frontend/dist/

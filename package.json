@@ -3,13 +3,19 @@
   "version": "1.0.0",
   "description": "RDB Law OS — React front-end with Express.js API",
   "main": "server.js",
-  "engines": { "node": ">=18" },
+  "engines": {
+    "node": ">=18"
+  },
   "scripts": {
     "start": "node --experimental-sqlite server.js",
     "dev": "node --experimental-sqlite --watch server.js"
   },
   "dependencies": {
+    "@supabase/supabase-js": "^2.103.3",
     "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^12.9.0",
+    "better-sqlite3-session-store": "^0.1.0",
+    "dotenv": "^17.4.2",
     "ejs": "^3.1.9",
     "express": "^4.19.2",
     "express-session": "^1.18.0",
